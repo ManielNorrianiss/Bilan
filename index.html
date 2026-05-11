@@ -471,7 +471,7 @@ var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxxgFRBHQtppC9DUSkL7gC
 })();
 
 // Setup banner
-if(SCRIPT_URL==="COLLER_URL_ICI"){
+if(SCRIPT_URL==="https://script.google.com/macros/s/AKfycbxxgFRBHQtppC9DUSkL7gCV-1iiK3WB-94b91zk4hL0Tb5csmucipKNvBjLe_0YRtJdQA/exec";"){
   document.getElementById('setup-banner').classList.remove('hidden');
 } else {
   document.getElementById('setup-banner').classList.add('hidden');
@@ -482,7 +482,7 @@ if(SCRIPT_URL==="COLLER_URL_ICI"){
 var joueurCache=[];
 
 function chargerJoueurs(){
-  if(SCRIPT_URL==="COLLER_URL_ICI") return;
+  if(SCRIPT_URL==="https://script.google.com/macros/s/AKfycbxxgFRBHQtppC9DUSkL7gCV-1iiK3WB-94b91zk4hL0Tb5csmucipKNvBjLe_0YRtJdQA/exec";") return;
   fetch(SCRIPT_URL+"?action=all")
     .then(r=>r.json())
     .then(data=>{ if(data.joueurs) joueurCache=data.joueurs; })
@@ -522,7 +522,7 @@ function rechercherJoueurs(q){
     afficherSuggestions(res);
     return;
   }
-  if(SCRIPT_URL==="COLLER_URL_ICI") return;
+  if(SCRIPT_URL==="https://script.google.com/macros/s/AKfycbxxgFRBHQtppC9DUSkL7gCV-1iiK3WB-94b91zk4hL0Tb5csmucipKNvBjLe_0YRtJdQA/exec";") return;
   spinner.classList.add('active');
   fetch(SCRIPT_URL+"?action=search&q="+encodeURIComponent(q))
     .then(r=>r.json())
