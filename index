@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fléau GN — Bilan de Partie · Royolo</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment: #f2e8d0;
+    --parchment-dark: #e0d0b0;
+    --ink: #1a1209;
+    --ink-light: #3d2b10;
+    --gold: #c9943a;
+    --gold-light: #e8c06a;
+    --gold-dark: #8a6520;
+    --crimson: #6e1a1a;
+    --shadow: rgba(10,5,0,0.5);
+    --violet: #8060c0;
+    --violet-dark: #4020a0;
+    --violet-light: #b090e8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0b090e;
+    background-image:
+      radial-gradient(ellipse at 30% 0%, #1a0a2e 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 100%, #0e0a1a 0%, transparent 50%);
+    min-height: 100vh;
+    font-family: 'Crimson Pro', Georgia, serif;
+    color: var(--ink);
+  }
+
+  /* Particles */
+  .embers { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .ember { position: absolute; bottom: -10px; border-radius: 50%; background: #a07ae0; box-shadow: 0 0 6px 2px #7040c0; animation: rise linear infinite; opacity: 0; }
+  @keyframes rise {
+    0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+    10%  { opacity: 0.5; }
+    100% { transform: translateY(-90vh) translateX(var(--drift)) scale(0.1); opacity: 0; }
+  }
+
+  /* Header */
+  header { position: relative; z-index: 1; text-align: center; padding: 48px 20px 28px; }
+  .crest { width: 88px; height: 88px; margin: 0 auto 14px; animation: pulse 3s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { filter: drop-shadow(0 0 8px #8060c0); } 50% { filter: drop-shadow(0 0 22px #c0a0ff); } }
+  .event-badge { display: inline-block; font-family: 'Cinzel', serif; font-size: 0.74rem; letter-spacing: 0.15em; color: #d4baff; border: 1px solid #6040a0; padding: 5px 16px; margin-bottom: 10px; background: rgba(80,40,120,0.2); }
+  h1 { font-family: 'Cinzel Decorative', serif; font-size: clamp(1.5rem, 4vw, 2.6rem); color: #d4baff; text-shadow: 0 0 20px rgba(180,140,255,0.5), 0 2px 4px var(--shadow); line-height: 1.2; }
+  .subtitle { font-family: 'Cinzel', serif; font-size: 0.78rem; letter-spacing: 0.22em; color: #9070c0; text-transform: uppercase; margin-top: 6px; }
+  .divider { width: 320px; max-width: 80%; height: 1px; background: linear-gradient(to right, transparent, #8060c0, transparent); margin: 16px auto; }
+
+  /* Scroll */
+  .scroll-container { position: relative; z-index: 1; max-width: 780px; margin: 0 auto 60px; padding: 0 20px; }
+  .scroll {
+    background: linear-gradient(180deg, var(--parchment-dark) 0%, var(--parchment) 5%, var(--parchment) 95%, var(--parchment-dark) 100%);
+    border: 1px solid rgba(120,80,180,0.3);
+    box-shadow: 0 0 40px rgba(120,80,200,0.12), 0 20px 60px rgba(0,0,0,0.7), inset 0 0 30px rgba(0,0,0,0.04);
+    padding: 50px 50px 60px; position: relative;
+  }
+  .scroll::before, .scroll::after {
+    content: ''; display: block; height: 18px;
+    background: linear-gradient(to right, var(--parchment-dark), #b8a0d8, #8060b0, #b8a0d8, var(--parchment-dark));
+    border-radius: 2px; margin: 0 -50px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .scroll::before { margin-bottom: 40px; }
+  .scroll::after  { margin-top: 40px; }
+  @media (max-width: 600px) {
+    .scroll { padding: 36px 22px 46px; }
+    .scroll::before, .scroll::after { margin: 0 -22px; }
+  }
+
+  .form-title { font-family: 'Cinzel Decorative', serif; font-size: clamp(1.2rem, 3vw, 1.65rem); color: var(--crimson); text-align: center; margin-bottom: 4px; line-height: 1.3; }
+  .form-intro { font-style: italic; font-size: 1rem; color: var(--ink-light); text-align: center; margin-bottom: 26px; line-height: 1.6; }
+  .required-note { font-style: italic; font-size: 0.85rem; color: var(--ink-light); opacity: 0.7; margin-bottom: 16px; }
+
+  .section-title {
+    font-family: 'Cinzel', serif; font-size: 0.74rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--violet-dark);
+    margin: 28px 0 10px; display: flex; align-items: center; gap: 10px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, var(--violet-dark), transparent); }
+
+  label { display: block; font-family: 'Cinzel', serif; font-size: 0.78rem; letter-spacing: 0.08em; color: var(--ink-light); margin-bottom: 6px; margin-top: 16px; }
+  label .req { color: var(--crimson); margin-left: 3px; }
+
+  input[type="text"], textarea, select {
+    width: 100%; background: rgba(255,255,255,0.5);
+    border: 1px solid rgba(100,60,160,0.4); border-bottom: 2px solid var(--violet-dark);
+    padding: 10px 14px; font-family: 'Crimson Pro', serif; font-size: 1rem; color: var(--ink);
+    outline: none; transition: all 0.3s; border-radius: 2px;
+  }
+  input[type="text"]:focus, textarea:focus, select:focus {
+    background: rgba(255,255,255,0.75); border-color: var(--violet);
+    box-shadow: 0 2px 12px rgba(120,80,200,0.2);
+  }
+  textarea { resize: vertical; min-height: 86px; line-height: 1.6; }
+  select { cursor: pointer; }
+
+  /* ── LOOKUP ── */
+  .lookup-zone { position: relative; margin-bottom: 4px; }
+  .lookup-spinner { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; border: 2px solid rgba(100,60,160,0.3); border-top-color: var(--violet); border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+  .lookup-spinner.active { display: block; }
+  @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
+
+  .autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; z-index: 100; background: var(--parchment); border: 1px solid rgba(100,60,160,0.4); border-top: none; max-height: 240px; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.25); display: none; }
+  .autocomplete-list.open { display: block; }
+  .autocomplete-item { padding: 10px 14px; cursor: pointer; border-bottom: 1px solid rgba(100,60,160,0.1); transition: background 0.15s; }
+  .autocomplete-item:hover, .autocomplete-item.selected { background: rgba(100,60,160,0.1); }
+  .ai-nom { font-family: 'Cinzel', serif; font-size: 0.76rem; color: var(--violet-dark); }
+  .ai-perso { font-size: 0.92rem; color: var(--ink); }
+  .ai-lunes { font-size: 0.78rem; color: var(--ink-light); float: right; font-style: italic; }
+  .ai-peuple { font-size: 0.76rem; color: var(--gold-dark); }
+  .autocomplete-no-result { padding: 10px 14px; font-style: italic; color: var(--ink-light); font-size: 0.9rem; }
+
+  /* Fiche joueur */
+  .fiche-joueur { background: rgba(80,40,140,0.07); border: 1px solid rgba(100,60,160,0.3); border-left: 3px solid var(--violet); padding: 14px 18px; margin-top: 10px; display: none; animation: fadeIn 0.4s ease; }
+  .fiche-joueur.visible { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+  .fj-title { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.15em; color: var(--violet-dark); text-transform: uppercase; margin-bottom: 8px; }
+  .fj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
+  @media (max-width: 480px) { .fj-grid { grid-template-columns: 1fr; } }
+  .fj-item { font-size: 0.9rem; color: var(--ink); }
+  .fj-item span { font-family: 'Cinzel', serif; font-size: 0.68rem; color: var(--ink-light); display: block; }
+  .fj-lunes-badge { display: inline-block; background: var(--violet); color: white; font-family: 'Cinzel', serif; font-size: 0.72rem; padding: 3px 10px; letter-spacing: 0.1em; margin-top: 2px; }
+  .fj-peuple-badge { display: inline-block; background: var(--gold-dark); color: white; font-family: 'Cinzel', serif; font-size: 0.72rem; padding: 3px 10px; letter-spacing: 0.08em; margin-top: 2px; }
+  .fj-change { font-family: 'Cinzel', serif; font-size: 0.63rem; color: var(--violet); cursor: pointer; text-decoration: underline; margin-top: 8px; display: inline-block; opacity: 0.7; }
+  .fj-change:hover { opacity: 1; }
+
+  .nouveau-toggle { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.1em; color: var(--violet); cursor: pointer; text-align: center; margin-top: 10px; opacity: 0.7; text-decoration: underline; }
+  .nouveau-toggle:hover { opacity: 1; }
+  .nouveau-fields { display: none; margin-top: 10px; }
+  .nouveau-fields.visible { display: block; }
+
+  /* Setup banner */
+  .setup-banner { background: rgba(200,100,50,0.15); border: 1px solid rgba(200,100,50,0.4); border-left: 3px solid #c86432; padding: 14px 18px; margin-bottom: 18px; font-size: 0.88rem; color: var(--ink-light); line-height: 1.6; }
+  .setup-banner strong { font-family: 'Cinzel', serif; font-size: 0.76rem; color: #8b3010; display: block; margin-bottom: 6px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .setup-banner code { background: rgba(0,0,0,0.08); padding: 1px 5px; font-size: 0.85em; border-radius: 2px; }
+  .setup-banner.hidden { display: none; }
+
+  /* Stars */
+  .stars { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 4px; margin-top: 8px; }
+  .stars input { display: none; }
+  .stars label { font-size: 1.8rem; color: var(--parchment-dark); cursor: pointer; transition: all 0.15s; margin: 0; padding: 0 2px; letter-spacing: 0; font-family: inherit; }
+  .stars label::before { content: '✦'; }
+  .stars input:checked ~ label, .stars label:hover, .stars label:hover ~ label { color: var(--gold); text-shadow: 0 0 8px rgba(200,160,50,0.6); }
+
+  /* Choices */
+  .choices { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .choice-item { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+  .choice-item input { display: none; }
+  .choice-marker { width: 18px; height: 18px; border: 1px solid var(--violet-dark); background: rgba(255,255,255,0.4); flex-shrink: 0; margin-top: 2px; transition: all 0.2s; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; }
+  .choice-item input[type="radio"] + .choice-marker { border-radius: 50%; }
+  .choice-item input:checked + .choice-marker { background: var(--violet); border-color: var(--violet-dark); color: white; box-shadow: 0 0 8px rgba(120,80,200,0.4); }
+  .choice-item input:checked + .choice-marker::after { content: '✦'; }
+  .choice-item input[type="checkbox"]:checked + .choice-marker::after { content: '✔'; }
+  .choice-label { font-family: 'Crimson Pro', serif; font-size: 1rem; color: var(--ink); line-height: 1.4; }
+
+  /* Scale */
+  .scale-row { display: flex; gap: 6px; margin-top: 8px; }
+  .scale-btn { flex: 1; padding: 8px 4px; background: rgba(255,255,255,0.4); border: 1px solid rgba(100,60,160,0.35); font-family: 'Cinzel', serif; font-size: 0.8rem; color: var(--ink-light); cursor: pointer; transition: all 0.2s; text-align: center; }
+  .scale-btn:hover, .scale-btn.selected { background: var(--violet); color: white; border-color: var(--violet-dark); box-shadow: 0 0 8px rgba(120,80,200,0.3); }
+  .scale-labels { display: flex; justify-content: space-between; font-style: italic; font-size: 0.78rem; color: var(--ink-light); margin-top: 4px; opacity: 0.7; }
+
+  /* Submit */
+  .submit-wrap { text-align: center; margin-top: 40px; }
+  .submit-btn { font-family: 'Cinzel', serif; font-size: 0.88rem; letter-spacing: 0.15em; text-transform: uppercase; color: white; background: linear-gradient(135deg, var(--violet-light), var(--violet), var(--violet-dark)); border: none; padding: 16px 48px; cursor: pointer; clip-path: polygon(16px 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 16px 100%, 0 50%); transition: filter 0.3s, transform 0.2s; box-shadow: 0 4px 20px rgba(120,80,200,0.4); }
+  .submit-btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+  .submit-btn:active { transform: translateY(0); }
+
+  /* Success */
+  .success-msg { display: none; text-align: center; padding: 30px; animation: fadeIn 0.6s ease; }
+  .success-msg .sigil-sm { font-size: 3rem; margin-bottom: 16px; }
+  .success-msg h2 { font-family: 'Cinzel Decorative', serif; color: var(--crimson); font-size: 1.4rem; margin-bottom: 10px; }
+  .success-msg p { font-style: italic; color: var(--ink-light); font-size: 1.05rem; line-height: 1.7; }
+
+  /* Admin */
+  .admin-toggle { text-align: center; margin-top: 18px; }
+  .admin-btn { font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--violet); background: transparent; border: 1px solid rgba(100,60,160,0.3); padding: 8px 20px; cursor: pointer; transition: all 0.3s; opacity: 0.6; }
+  .admin-btn:hover { opacity: 1; border-color: var(--violet); }
+  .results-container { display: none; }
+  .results-container.visible { display: block; }
+  .result-card { background: rgba(255,255,240,0.6); border: 1px solid rgba(100,60,160,0.25); border-left: 3px solid var(--violet); padding: 14px 18px; margin-bottom: 10px; font-size: 0.93rem; line-height: 1.65; }
+  .rc-name { font-family: 'Cinzel', serif; font-size: 0.75rem; color: var(--violet-dark); margin-bottom: 5px; letter-spacing: 0.08em; }
+  .rc-meta { font-size: 0.68rem; color: var(--ink-light); opacity: 0.5; float: right; }
+  .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .export-btn { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.12em; color: var(--violet); background: transparent; border: 1px solid rgba(100,60,160,0.3); padding: 6px 14px; cursor: pointer; }
+  .export-btn:hover { background: rgba(100,60,160,0.1); }
+  .stats-panel { background: rgba(255,255,240,0.4); border: 1px solid rgba(100,60,160,0.2); padding: 14px 18px; margin-bottom: 14px; }
+  .stats-panel h3 { font-family: 'Cinzel', serif; font-size: 0.78rem; color: var(--violet-dark); letter-spacing: 0.1em; margin-bottom: 10px; }
+  .stat-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid rgba(100,60,160,0.1); font-size: 0.88rem; }
+</style>
+</head>
+<body>
+
+<div class="embers" id="embers"></div>
+
+<header>
+  <div class="crest">
+    <svg viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="90">
+      <circle cx="45" cy="45" r="40" stroke="#6040a0" stroke-width="1" opacity="0.5"/>
+      <circle cx="45" cy="45" r="30" stroke="#8060c0" stroke-width="0.8" opacity="0.6"/>
+      <polygon points="45,8 55,35 84,35 61,53 70,80 45,63 20,80 29,53 6,35 35,35" fill="none" stroke="#b090e0" stroke-width="1.2"/>
+      <circle cx="45" cy="45" r="6" fill="#8060c0" opacity="0.8"/>
+      <line x1="45" y1="15" x2="45" y2="75" stroke="#6040a0" stroke-width="0.6" opacity="0.4"/>
+      <line x1="15" y1="45" x2="75" y2="45" stroke="#6040a0" stroke-width="0.6" opacity="0.4"/>
+      <line x1="24" y1="24" x2="66" y2="66" stroke="#6040a0" stroke-width="0.5" opacity="0.3"/>
+      <line x1="66" y1="24" x2="24" y2="66" stroke="#6040a0" stroke-width="0.5" opacity="0.3"/>
+    </svg>
+  </div>
+  <div class="event-badge">Fléau Grandeur Nature · Royolo</div>
+  <h1>Bilan de Partie</h1>
+  <div class="subtitle">⚔ Pour tous les peuples de Royolo ⚔</div>
+  <div class="divider"></div>
+  <p style="font-style:italic;color:#9070c0;font-size:0.9rem;">Que chaque voix résonne dans les Annales de Fléau</p>
+</header>
+
+<div class="scroll-container">
+  <div class="scroll">
+    <div class="form-title">Parchemin du Conseil</div>
+    <p class="form-intro">
+      Après chaque partie, ton témoignage aide à façonner les prochaines aventures.<br>
+      Réponds avec franchise — ton avis forge la légende.
+    </p>
+
+    <div class="setup-banner" id="setup-banner">
+      <strong>⚙ Configuration requise</strong>
+      Remplace <code>SCRIPT_URL</code> en haut du JavaScript par l'URL de ton déploiement Google Apps Script.<br>
+      Utilise le fichier <code>SCRIPT_APPS_GOOGLE_v2.gs</code> (version tous peuples).
+    </div>
+
+    <div id="form-wrap">
+      <p class="required-note">✦ Champs obligatoires</p>
+
+      <!-- ══ IDENTIFICATION ══ -->
+      <div class="section-title">Ton Identité</div>
+
+      <label>Cherche ton nom de joueur·euse <span class="req">✦</span></label>
+      <div class="lookup-zone">
+        <input type="text" id="search-input" placeholder="Commence à taper ton nom…" autocomplete="off">
+        <div class="lookup-spinner" id="spinner"></div>
+        <div class="autocomplete-list" id="autocomplete-list"></div>
+      </div>
+
+      <!-- Fiche confirmée -->
+      <div class="fiche-joueur" id="fiche-joueur">
+        <div class="fj-title">✦ Profil confirmé</div>
+        <div class="fj-grid">
+          <div class="fj-item"><span>Joueur·euse</span><span id="fj-nom">—</span></div>
+          <div class="fj-item"><span>Personnage</span><span id="fj-perso">—</span></div>
+          <div class="fj-item">
+            <span>Peuple</span>
+            <div class="fj-peuple-badge" id="fj-peuple">—</div>
+          </div>
+          <div class="fj-item">
+            <span>Lunes</span>
+            <div class="fj-lunes-badge" id="fj-lunes">—</div>
+          </div>
+          <div class="fj-item"><span>Classe</span><span id="fj-classe">—</span></div>
+          <div class="fj-item"><span>Divinité</span><span id="fj-divinite">—</span></div>
+        </div>
+        <span class="fj-change" onclick="reinitIdentite()">↩ Ce n'est pas moi</span>
+      </div>
+
+      <!-- Saisie manuelle -->
+      <div class="nouveau-toggle" id="nouveau-toggle" onclick="toggleManuel()">
+        Je ne trouve pas mon nom → entrer manuellement
+      </div>
+      <div class="nouveau-fields" id="nouveau-fields">
+        <label>Nom de joueur·euse <span class="req">✦</span></label>
+        <input type="text" id="nom-manuel" placeholder="Ton vrai nom…">
+        <label>Nom de personnage</label>
+        <input type="text" id="perso-manuel" placeholder="Qui es-tu dans ce monde ?">
+        <label>Ton peuple <span class="req">✦</span></label>
+        <select id="peuple-manuel">
+          <option value="">— Choisir ton peuple —</option>
+          <option>Moriquendi</option>
+          <option>Lossado</option>
+          <option>Pandor</option>
+          <option>Peuple des Sables</option>
+          <option>Numénor</option>
+          <option>Eldoriath (Elfes)</option>
+          <option>Nazzakri (Orcs / Horde du Chaos)</option>
+          <option>Khazad (Nains)</option>
+          <option>Oz</option>
+          <option>Témériens</option>
+          <option>Elanor</option>
+          <option>Dragon</option>
+          <option>Sans affiliation</option>
+          <option>Autre…</option>
+        </select>
+        <label>Faction ou famille dans ton peuple</label>
+        <input type="text" id="faction-manuel" placeholder="Ex: Famille Waral, Ordre de Luminis…">
+        <label>Nombre de lunes</label>
+        <input type="text" id="lunes-manuel" placeholder="Ex: 12">
+      </div>
+
+      <!-- Champs cachés -->
+      <input type="hidden" id="val-nom">
+      <input type="hidden" id="val-perso">
+      <input type="hidden" id="val-peuple">
+      <input type="hidden" id="val-lunes">
+      <input type="hidden" id="val-classe">
+      <input type="hidden" id="val-divinite">
+      <input type="hidden" id="val-source">
+
+      <!-- ══ EXPÉRIENCE GLOBALE ══ -->
+      <div class="section-title">Expérience Globale</div>
+      <label>Note globale de ta partie <span class="req">✦</span></label>
+      <div class="stars">
+        <input type="radio" name="note" id="s5" value="5"><label for="s5"></label>
+        <input type="radio" name="note" id="s4" value="4"><label for="s4"></label>
+        <input type="radio" name="note" id="s3" value="3"><label for="s3"></label>
+        <input type="radio" name="note" id="s2" value="2"><label for="s2"></label>
+        <input type="radio" name="note" id="s1" value="1"><label for="s1"></label>
+      </div>
+      <label>Ton meilleur moment de la partie ?</label>
+      <textarea id="top" placeholder="Le moment que tu vas encore raconter dans 10 ans…"></textarea>
+      <label>Qu'est-ce qui t'a moins plu ou dérangé ?</label>
+      <textarea id="flop" placeholder="Sois honnête, c'est pour s'améliorer…"></textarea>
+
+      <!-- ══ AMBIANCE & JDR ══ -->
+      <div class="section-title">Ambiance & Jeu de Rôle</div>
+      <label>Ambiance générale du terrain</label>
+      <div class="scale-row"><button class="scale-btn" onclick="sel(this,'ambiance')">1</button><button class="scale-btn" onclick="sel(this,'ambiance')">2</button><button class="scale-btn" onclick="sel(this,'ambiance')">3</button><button class="scale-btn" onclick="sel(this,'ambiance')">4</button><button class="scale-btn" onclick="sel(this,'ambiance')">5</button></div>
+      <div class="scale-labels"><span>Très faible</span><span>Excellente</span></div>
+      <input type="hidden" id="ambiance" value="">
+
+      <label>Qualité du jeu de rôle autour de toi</label>
+      <div class="scale-row"><button class="scale-btn" onclick="sel(this,'jr')">1</button><button class="scale-btn" onclick="sel(this,'jr')">2</button><button class="scale-btn" onclick="sel(this,'jr')">3</button><button class="scale-btn" onclick="sel(this,'jr')">4</button><button class="scale-btn" onclick="sel(this,'jr')">5</button></div>
+      <div class="scale-labels"><span>Très faible</span><span>Excellent</span></div>
+      <input type="hidden" id="jr" value="">
+
+      <label>Kudos — joueur·euse·s dont le JdR t'a impressionné·e</label>
+      <textarea id="kudos" placeholder="Noms + pourquoi… Ces témoignages peuvent être partagés !" style="min-height:70px;"></textarea>
+
+      <!-- ══ SCÉNARIO ══ -->
+      <div class="section-title">Scénario & Intrigues</div>
+      <label>Qualité et clarté des intrigues de ton peuple</label>
+      <div class="scale-row"><button class="scale-btn" onclick="sel(this,'intrigue')">1</button><button class="scale-btn" onclick="sel(this,'intrigue')">2</button><button class="scale-btn" onclick="sel(this,'intrigue')">3</button><button class="scale-btn" onclick="sel(this,'intrigue')">4</button><button class="scale-btn" onclick="sel(this,'intrigue')">5</button></div>
+      <div class="scale-labels"><span>Confus</span><span>Passionnant !</span></div>
+      <input type="hidden" id="intrigue" value="">
+
+      <label>Les quêtes proposées étaient-elles stimulantes ?</label>
+      <div class="choices">
+        <label class="choice-item"><input type="radio" name="quetes" value="très-stim"><span class="choice-marker"></span><span class="choice-label">Très stimulantes — captivé·e du début à la fin</span></label>
+        <label class="choice-item"><input type="radio" name="quetes" value="stim"><span class="choice-marker"></span><span class="choice-label">Stimulantes dans l'ensemble</span></label>
+        <label class="choice-item"><input type="radio" name="quetes" value="mitigé"><span class="choice-marker"></span><span class="choice-label">Mitigé — certaines oui, d'autres non</span></label>
+        <label class="choice-item"><input type="radio" name="quetes" value="peu-stim"><span class="choice-marker"></span><span class="choice-label">Peu stimulantes</span></label>
+        <label class="choice-item"><input type="radio" name="quetes" value="pas-compris"><span class="choice-marker"></span><span class="choice-label">Je n'ai pas bien compris quoi faire</span></label>
+      </div>
+
+      <label>Une intrigue ou scène qui t'a particulièrement accroché·e ?</label>
+      <textarea id="intrigue-fav" placeholder="Nom de l'intrigue, scène mémorable, PNJ marquant…" style="min-height:65px;"></textarea>
+      <label>Suggestions pour améliorer le scénario ou les quêtes ?</label>
+      <textarea id="suggestions" placeholder="Idées de trames, de types de quêtes, d'interactions entre peuples…" style="min-height:65px;"></textarea>
+
+      <!-- ══ PNJs ══ -->
+      <div class="section-title">Comédiens & PNJs</div>
+      <label>Qualité du jeu des comédiens / PNJs rencontrés</label>
+      <div class="scale-row"><button class="scale-btn" onclick="sel(this,'pnj')">1</button><button class="scale-btn" onclick="sel(this,'pnj')">2</button><button class="scale-btn" onclick="sel(this,'pnj')">3</button><button class="scale-btn" onclick="sel(this,'pnj')">4</button><button class="scale-btn" onclick="sel(this,'pnj')">5</button></div>
+      <div class="scale-labels"><span>Décevant</span><span>Mémorable !</span></div>
+      <input type="hidden" id="pnj" value="">
+
+      <label>Un PNJ ou comédien qui t'a particulièrement marqué·e ?</label>
+      <textarea id="pnj-fav" placeholder="Nom du PNJ / comédien + ce qui t'a marqué·e…" style="min-height:65px;"></textarea>
+
+      <!-- ══ ORGANISATION ══ -->
+      <div class="section-title">Organisation & Logistique</div>
+      <label>Organisation générale de l'événement</label>
+      <div class="scale-row"><button class="scale-btn" onclick="sel(this,'orga')">1</button><button class="scale-btn" onclick="sel(this,'orga')">2</button><button class="scale-btn" onclick="sel(this,'orga')">3</button><button class="scale-btn" onclick="sel(this,'orga')">4</button><button class="scale-btn" onclick="sel(this,'orga')">5</button></div>
+      <div class="scale-labels"><span>Chaotique</span><span>Impeccable</span></div>
+      <input type="hidden" id="orga" value="">
+
+      <label>Immersion visuelle (costumes, décors, accessoires, maquillage)</label>
+      <div class="scale-row"><button class="scale-btn" onclick="sel(this,'immersion')">1</button><button class="scale-btn" onclick="sel(this,'immersion')">2</button><button class="scale-btn" onclick="sel(this,'immersion')">3</button><button class="scale-btn" onclick="sel(this,'immersion')">4</button><button class="scale-btn" onclick="sel(this,'immersion')">5</button></div>
+      <div class="scale-labels"><span>Très faible</span><span>Excellente</span></div>
+      <input type="hidden" id="immersion" value="">
+
+      <label>Aspects logistiques à améliorer ?</label>
+      <textarea id="logistique" placeholder="Horaires, communication, sécurité, matériel…" style="min-height:65px;"></textarea>
+
+      <!-- ══ COMBAT & RÈGLES ══ -->
+      <div class="section-title">Combat & Règles</div>
+      <label>Les règles de combat étaient-elles bien appliquées ?</label>
+      <div class="choices">
+        <label class="choice-item"><input type="radio" name="regles" value="très-bien"><span class="choice-marker"></span><span class="choice-label">Très bien — tout le monde jouait fair-play</span></label>
+        <label class="choice-item"><input type="radio" name="regles" value="bien"><span class="choice-marker"></span><span class="choice-label">Bien dans l'ensemble</span></label>
+        <label class="choice-item"><input type="radio" name="regles" value="quelques-pb"><span class="choice-marker"></span><span class="choice-label">Quelques problèmes isolés</span></label>
+        <label class="choice-item"><input type="radio" name="regles" value="pb-recurrents"><span class="choice-marker"></span><span class="choice-label">Problèmes récurrents</span></label>
+      </div>
+      <label>Commentaires sur les règles ou le système de combat ?</label>
+      <textarea id="regles-comment" placeholder="Sorts, PV, équilibre, situations confuses…" style="min-height:65px;"></textarea>
+
+      <!-- ══ SÉCURITÉ ══ -->
+      <div class="section-title">Sécurité & Bien-être</div>
+      <label>T'es-tu senti·e en sécurité (physique et émotionnelle) ?</label>
+      <div class="choices">
+        <label class="choice-item"><input type="radio" name="securite" value="oui-tout"><span class="choice-marker"></span><span class="choice-label">Oui, complètement</span></label>
+        <label class="choice-item"><input type="radio" name="securite" value="oui-majorite"><span class="choice-marker"></span><span class="choice-label">Oui, la plupart du temps</span></label>
+        <label class="choice-item"><input type="radio" name="securite" value="moyennement"><span class="choice-marker"></span><span class="choice-label">Moyennement</span></label>
+        <label class="choice-item"><input type="radio" name="securite" value="non"><span class="choice-marker"></span><span class="choice-label">Non — j'aimerais en parler</span></label>
+      </div>
+      <label>Commentaire sur la sécurité (confidentiel si tu le souhaites)</label>
+      <textarea id="securite-comment" placeholder="Tu peux rester anonyme ou laisser tes coordonnées…" style="min-height:65px;"></textarea>
+
+      <!-- ══ BILAN ══ -->
+      <div class="section-title">Bilan & Avenir</div>
+      <label>Reviendrais-tu à la prochaine partie ? <span class="req">✦</span></label>
+      <div class="choices">
+        <label class="choice-item"><input type="radio" name="retour" value="oui-certain"><span class="choice-marker"></span><span class="choice-label">Oui, c'est certain !</span></label>
+        <label class="choice-item"><input type="radio" name="retour" value="probable"><span class="choice-marker"></span><span class="choice-label">Probablement oui</span></label>
+        <label class="choice-item"><input type="radio" name="retour" value="hesitant"><span class="choice-marker"></span><span class="choice-label">J'hésite selon le contexte</span></label>
+        <label class="choice-item"><input type="radio" name="retour" value="non"><span class="choice-marker"></span><span class="choice-label">Pas dans l'immédiat</span></label>
+      </div>
+      <label>Recommanderais-tu Fléau GN à quelqu'un ?</label>
+      <div class="choices">
+        <label class="choice-item"><input type="radio" name="reco" value="oui"><span class="choice-marker"></span><span class="choice-label">Oui, sans hésiter !</span></label>
+        <label class="choice-item"><input type="radio" name="reco" value="oui-reserves"><span class="choice-marker"></span><span class="choice-label">Oui, avec quelques réserves</span></label>
+        <label class="choice-item"><input type="radio" name="reco" value="pas-sur"><span class="choice-marker"></span><span class="choice-label">Pas sûr·e</span></label>
+        <label class="choice-item"><input type="radio" name="reco" value="non"><span class="choice-marker"></span><span class="choice-label">Non</span></label>
+      </div>
+      <label>Quelque chose que tu voudrais voir à la prochaine saison ?</label>
+      <textarea id="prochaine" placeholder="Nouvelles trames, mécanismes, types d'événements, idées folles…"></textarea>
+      <label>Message libre pour l'équipe d'animation :</label>
+      <textarea id="libre" placeholder="Merci, critiques, encouragements, tout ce qui est sur le cœur…"></textarea>
+
+      <div class="submit-wrap">
+        <button class="submit-btn" onclick="soumettre()">✦ Sceller ce Parchemin ✦</button>
+      </div>
+    </div>
+
+    <div class="success-msg" id="success">
+      <div class="sigil-sm">⚔</div>
+      <h2>Parchemin Scellé !</h2>
+      <p id="success-text">Ton témoignage a été gravé dans les Annales de Royolo.<br>Que ta prochaine aventure soit à la hauteur de ta légende.</p>
+    </div>
+  </div>
+
+  <div class="admin-toggle">
+    <button class="admin-btn" onclick="toggleResultats()">⚙ Voir les réponses soumises</button>
+  </div>
+  <div class="results-container" id="resultats">
+    <div class="scroll" style="margin-top:14px;padding:28px 38px;">
+      <div class="form-title" style="font-size:1.05rem;margin-bottom:12px;">Réponses — Bilan de Partie</div>
+      <div class="results-header">
+        <span id="reponses-count" style="font-style:italic;font-size:0.85rem;color:var(--ink-light);"></span>
+        <button class="export-btn" onclick="exporterCSV()">⤓ Exporter CSV</button>
+      </div>
+      <div id="stats-zone"></div>
+      <div id="resultats-liste"><p style="font-style:italic;text-align:center;opacity:0.5;">Aucune réponse pour l'instant.</p></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  ⚙ CONFIGURATION — remplace par ton URL de déploiement
+//  Utilise le script SCRIPT_APPS_GOOGLE_v2.gs (tous peuples)
+// ══════════════════════════════════════════════════════════
+var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxxgFRBHQtppC9DUSkL7gCV-1iiK3WB-94b91zk4hL0Tb5csmucipKNvBjLe_0YRtJdQA/exec";
+// ══════════════════════════════════════════════════════════
+
+// Particles
+(function(){
+  var c=document.getElementById('embers');
+  for(var i=0;i<18;i++){
+    var e=document.createElement('div');e.className='ember';
+    e.style.left=Math.random()*100+'%';
+    e.style.setProperty('--drift',(Math.random()*100-50)+'px');
+    e.style.animationDuration=(8+Math.random()*14)+'s';
+    e.style.animationDelay=(Math.random()*14)+'s';
+    var s=(1.5+Math.random()*2.5)+'px';
+    e.style.width=e.style.height=s;
+    c.appendChild(e);
+  }
+})();
+
+// Setup banner
+if(SCRIPT_URL==="COLLER_URL_ICI"){
+  document.getElementById('setup-banner').classList.remove('hidden');
+} else {
+  document.getElementById('setup-banner').classList.add('hidden');
+  chargerJoueurs();
+}
+
+// Cache
+var joueurCache=[];
+
+function chargerJoueurs(){
+  if(SCRIPT_URL==="COLLER_URL_ICI") return;
+  fetch(SCRIPT_URL+"?action=all")
+    .then(r=>r.json())
+    .then(data=>{ if(data.joueurs) joueurCache=data.joueurs; })
+    .catch(err=>console.warn("Chargement joueurs échoué:",err));
+}
+
+// Autocomplétion
+var selectedJoueur=null;
+var acList=document.getElementById('autocomplete-list');
+var searchInput=document.getElementById('search-input');
+var spinner=document.getElementById('spinner');
+var debounce;
+
+searchInput.addEventListener('input',function(){
+  var q=this.value.trim();
+  clearTimeout(debounce);
+  acList.classList.remove('open');
+  if(q.length<2) return;
+  debounce=setTimeout(function(){ rechercherJoueurs(q); },280);
+});
+
+searchInput.addEventListener('keydown',function(e){
+  var items=acList.querySelectorAll('.autocomplete-item');
+  var sel=acList.querySelector('.autocomplete-item.selected');
+  if(e.key==='ArrowDown'){ e.preventDefault(); if(!sel){ if(items[0]) items[0].classList.add('selected'); } else { sel.classList.remove('selected'); var n=sel.nextElementSibling; if(n&&n.classList.contains('autocomplete-item')) n.classList.add('selected'); } }
+  else if(e.key==='ArrowUp'){ e.preventDefault(); if(sel){ sel.classList.remove('selected'); var p=sel.previousElementSibling; if(p&&p.classList.contains('autocomplete-item')) p.classList.add('selected'); } }
+  else if(e.key==='Enter'){ e.preventDefault(); var s=acList.querySelector('.autocomplete-item.selected'); if(s) s.click(); }
+  else if(e.key==='Escape'){ acList.classList.remove('open'); }
+});
+
+document.addEventListener('click',function(e){ if(!e.target.closest('.lookup-zone')) acList.classList.remove('open'); });
+
+function rechercherJoueurs(q){
+  var ql=q.toLowerCase();
+  if(joueurCache.length>0){
+    var res=joueurCache.filter(j=>j.nom.toLowerCase().includes(ql)||j.personnage.toLowerCase().includes(ql));
+    afficherSuggestions(res);
+    return;
+  }
+  if(SCRIPT_URL==="COLLER_URL_ICI") return;
+  spinner.classList.add('active');
+  fetch(SCRIPT_URL+"?action=search&q="+encodeURIComponent(q))
+    .then(r=>r.json())
+    .then(data=>{ spinner.classList.remove('active'); afficherSuggestions(data.joueurs||[]); })
+    .catch(()=>{ spinner.classList.remove('active'); afficherSuggestions([]); });
+}
+
+function afficherSuggestions(joueurs){
+  acList.innerHTML='';
+  if(!joueurs||joueurs.length===0){
+    acList.innerHTML='<div class="autocomplete-no-result">Aucun résultat — tu peux entrer manuellement.</div>';
+    acList.classList.add('open'); return;
+  }
+  joueurs.slice(0,10).forEach(function(j){
+    var item=document.createElement('div');
+    item.className='autocomplete-item';
+    item.innerHTML=
+      '<div class="ai-nom">'+esc(j.nom)+'<span class="ai-lunes">🌙 '+(j.lunes||'?')+' lunes</span></div>'+
+      '<div class="ai-perso">'+esc(j.personnage)+'</div>'+
+      '<div class="ai-peuple">⚔ '+esc(j.peuple)+(j.famille?' · '+esc(j.famille):'')+'</div>';
+    item.addEventListener('click',function(){ selectionnerJoueur(j); });
+    acList.appendChild(item);
+  });
+  acList.classList.add('open');
+}
+
+function selectionnerJoueur(j){
+  selectedJoueur=j;
+  acList.classList.remove('open');
+  searchInput.value=j.nom;
+  document.getElementById('fj-nom').textContent=j.nom;
+  document.getElementById('fj-perso').textContent=j.personnage||'—';
+  document.getElementById('fj-peuple').textContent=j.peuple+(j.famille?' · '+j.famille:'');
+  document.getElementById('fj-lunes').textContent=(j.lunes||'?')+' 🌙';
+  document.getElementById('fj-classe').textContent=[j.classe,j.prestige].filter(Boolean).join(' · ')||'—';
+  document.getElementById('fj-divinite').textContent=j.divinite||'—';
+  document.getElementById('fiche-joueur').classList.add('visible');
+  document.getElementById('nouveau-toggle').style.display='none';
+  document.getElementById('nouveau-fields').classList.remove('visible');
+  document.getElementById('val-nom').value=j.nom;
+  document.getElementById('val-perso').value=j.personnage;
+  document.getElementById('val-peuple').value=j.peuple+(j.famille?' · '+j.famille:'');
+  document.getElementById('val-lunes').value=j.lunes;
+  document.getElementById('val-classe').value=j.classe;
+  document.getElementById('val-divinite').value=j.divinite;
+  document.getElementById('val-source').value='sheet';
+}
+
+function reinitIdentite(){
+  selectedJoueur=null;
+  searchInput.value='';
+  document.getElementById('fiche-joueur').classList.remove('visible');
+  document.getElementById('nouveau-toggle').style.display='';
+  document.getElementById('val-nom').value='';
+  document.getElementById('val-source').value='';
+  searchInput.focus();
+}
+
+function toggleManuel(){
+  var f=document.getElementById('nouveau-fields');
+  var v=f.classList.toggle('visible');
+  document.getElementById('nouveau-toggle').textContent=v
+    ?'↩ Annuler la saisie manuelle'
+    :'Je ne trouve pas mon nom → entrer manuellement';
+  document.getElementById('val-source').value=v?'manuel':'';
+}
+
+// Helpers
+function sel(btn,id){
+  btn.parentElement.querySelectorAll('.scale-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById(id).value=btn.textContent;
+}
+function getVal(id){ return (document.getElementById(id)||{}).value||''; }
+function getRadio(name){ var el=document.querySelector('input[name="'+name+'"]:checked'); return el?el.value:''; }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// Stockage
+function getResponses(){ try{ return JSON.parse(localStorage.getItem('fleau_bilan')||'[]'); }catch(e){return[];} }
+function saveResponse(d){ var a=getResponses();a.push(d);localStorage.setItem('fleau_bilan',JSON.stringify(a)); }
+
+// Soumission
+function soumettre(){
+  var source=getVal('val-source');
+  var nom,perso,peuple,lunes;
+
+  if(source==='sheet'){
+    nom=getVal('val-nom'); perso=getVal('val-perso');
+    peuple=getVal('val-peuple'); lunes=getVal('val-lunes');
+  } else if(source==='manuel'){
+    nom=getVal('nom-manuel').trim(); perso=getVal('perso-manuel').trim();
+    peuple=getVal('peuple-manuel'); lunes=getVal('lunes-manuel').trim();
+    if(!nom){ alert('Veuillez entrer ton nom de joueur·euse.'); return; }
+    if(!peuple){ alert('Veuillez choisir ton peuple.'); return; }
+  } else {
+    alert('Veuillez d\'abord trouver ton nom dans la liste, ou utiliser la saisie manuelle.');
+    searchInput.focus(); return;
+  }
+
+  if(!nom){ alert('Veuillez entrer ton nom de joueur·euse.'); return; }
+  var note=getRadio('note');
+  if(!note){ alert('Veuillez attribuer une note globale.'); return; }
+  var retour=getRadio('retour');
+  if(!retour){ alert('Veuillez répondre à la question sur le retour.'); return; }
+
+  var d={
+    ts: new Date().toLocaleString('fr-CA'),
+    source: source,
+    nom: nom, perso: perso, peuple: peuple, lunes: lunes,
+    classe: getVal('val-classe'), divinite: getVal('val-divinite'),
+    note: note, top: getVal('top'), flop: getVal('flop'),
+    ambiance: getVal('ambiance'), jr: getVal('jr'), kudos: getVal('kudos'),
+    intrigue: getVal('intrigue'), quetes: getRadio('quetes'),
+    intrigue_fav: getVal('intrigue-fav'), suggestions: getVal('suggestions'),
+    pnj: getVal('pnj'), pnj_fav: getVal('pnj-fav'),
+    orga: getVal('orga'), immersion: getVal('immersion'), logistique: getVal('logistique'),
+    regles: getRadio('regles'), regles_comment: getVal('regles-comment'),
+    securite: getRadio('securite'), securite_comment: getVal('securite-comment'),
+    retour: retour, reco: getRadio('reco'),
+    prochaine: getVal('prochaine'), libre: getVal('libre')
+  };
+
+  saveResponse(d);
+  document.getElementById('form-wrap').style.display='none';
+  document.getElementById('success').style.display='block';
+  document.getElementById('success-text').innerHTML=
+    'Ton témoignage a été gravé dans les Annales de Royolo, <strong>'+esc(perso||nom)+'</strong>.<br>'+
+    'Que ta prochaine aventure soit à la hauteur de ta légende.';
+}
+
+// Admin
+function toggleResultats(){
+  var c=document.getElementById('resultats');
+  if(c.classList.toggle('visible')) afficherResultats();
+}
+
+function etoiles(n){ return '✦'.repeat(parseInt(n)||0)+'✧'.repeat(5-(parseInt(n)||0)); }
+
+function afficherStats(data){
+  if(!data.length){ document.getElementById('stats-zone').innerHTML=''; return; }
+  var avg=function(f){ var v=data.map(d=>parseInt(d[f])||0).filter(v=>v>0); return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1):'—'; };
+  var peuples={};
+  data.forEach(d=>{ var p=d.peuple||'Inconnu'; peuples[p]=(peuples[p]||0)+1; });
+  var pStr=Object.entries(peuples).sort((a,b)=>b[1]-a[1]).map(([k,v])=>k+': '+v).join(' · ');
+  document.getElementById('stats-zone').innerHTML=
+    '<div class="stats-panel"><h3>📊 Statistiques ('+data.length+' réponse'+(data.length>1?'s':'')+')</h3>'+
+    '<div class="stat-row"><span>Note moyenne</span><span>'+avg('note')+'/5</span></div>'+
+    '<div class="stat-row"><span>Ambiance</span><span>'+avg('ambiance')+'/5</span></div>'+
+    '<div class="stat-row"><span>JdR</span><span>'+avg('jr')+'/5</span></div>'+
+    '<div class="stat-row"><span>Intrigues</span><span>'+avg('intrigue')+'/5</span></div>'+
+    '<div class="stat-row"><span>PNJs</span><span>'+avg('pnj')+'/5</span></div>'+
+    '<div class="stat-row"><span>Organisation</span><span>'+avg('orga')+'/5</span></div>'+
+    '<div class="stat-row"><span>Peuples représentés</span><span style="font-size:0.8rem">'+pStr+'</span></div>'+
+    '</div>';
+}
+
+function afficherResultats(){
+  var data=getResponses();
+  document.getElementById('reponses-count').textContent=data.length+' réponse'+(data.length>1?'s':'');
+  afficherStats(data);
+  var liste=document.getElementById('resultats-liste');
+  if(!data.length){ liste.innerHTML='<p style="font-style:italic;text-align:center;opacity:0.5;">Aucune réponse pour l\'instant.</p>'; return; }
+  liste.innerHTML=data.map(d=>
+    '<div class="result-card">'+
+    '<div class="rc-name">'+esc(d.nom)+(d.perso?' ('+esc(d.perso)+')':'')+
+    ' · <strong>'+esc(d.peuple||'—')+'</strong>'+
+    ' · 🌙 '+(d.lunes||'?')+' lunes'+
+    '<span class="rc-meta">'+d.ts+'</span></div>'+
+    '<strong>Note :</strong> '+etoiles(d.note)+'<br>'+
+    (d.top?'<strong>Meilleur moment :</strong> '+esc(d.top)+'<br>':'')+
+    (d.flop?'<strong>Moins aimé :</strong> '+esc(d.flop)+'<br>':'')+
+    (d.ambiance?'<strong>Ambiance :</strong> '+d.ambiance+'/5 · <strong>JdR :</strong> '+d.jr+'/5 · <strong>Intrigues :</strong> '+d.intrigue+'/5 · <strong>PNJs :</strong> '+d.pnj+'/5 · <strong>Orga :</strong> '+d.orga+'/5<br>':'')+
+    (d.kudos?'<strong>Kudos :</strong> '+esc(d.kudos)+'<br>':'')+
+    (d.intrigue_fav?'<strong>Intrigue favorite :</strong> '+esc(d.intrigue_fav)+'<br>':'')+
+    (d.pnj_fav?'<strong>PNJ mémorable :</strong> '+esc(d.pnj_fav)+'<br>':'')+
+    (d.suggestions?'<strong>Suggestions :</strong> '+esc(d.suggestions)+'<br>':'')+
+    (d.retour?'<strong>Retour :</strong> '+d.retour+' · <strong>Recommande :</strong> '+(d.reco||'—')+'<br>':'')+
+    (d.prochaine?'<strong>Prochaine saison :</strong> '+esc(d.prochaine)+'<br>':'')+
+    (d.libre?'<strong>Message :</strong> '+esc(d.libre):'')+
+    '</div>'
+  ).join('');
+}
+
+function exporterCSV(){
+  var data=getResponses();
+  if(!data.length){ alert('Aucune réponse à exporter.'); return; }
+  var cols=['ts','source','nom','perso','peuple','lunes','classe','divinite','note','top','flop','ambiance','jr','kudos','intrigue','quetes','intrigue_fav','suggestions','pnj','pnj_fav','orga','immersion','logistique','regles','regles_comment','securite','securite_comment','retour','reco','prochaine','libre'];
+  var hdrs=['Date','Source','Joueur','Personnage','Peuple','Lunes','Classe','Divinité','Note','Meilleur moment','Moins aimé','Ambiance','JdR','Kudos','Intrigues','Quêtes','Intrigue favorite','Suggestions','PNJs','PNJ mémorable','Orga','Immersion','Logistique','Règles','Commentaire règles','Sécurité','Commentaire sécurité','Retour','Recommande','Prochaine saison','Message'];
+  var csv=[hdrs.join(';'),...data.map(d=>cols.map(c=>'"'+String(d[c]||'').replace(/"/g,'""')+'"').join(';'))].join('\n');
+  var a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download='fleau_bilan_partie.csv';a.click();
+}
+</script>
+</body>
+</html>
