@@ -248,16 +248,10 @@
         <div class="fj-grid">
           <div class="fj-item"><span>Joueur·euse</span><span id="fj-nom">—</span></div>
           <div class="fj-item"><span>Personnage</span><span id="fj-perso">—</span></div>
-          <div class="fj-item">
+          <div class="fj-item" style="grid-column:1/-1;">
             <span>Peuple</span>
             <div class="fj-peuple-badge" id="fj-peuple">—</div>
           </div>
-          <div class="fj-item">
-            <span>Lunes</span>
-            <div class="fj-lunes-badge" id="fj-lunes">—</div>
-          </div>
-          <div class="fj-item"><span>Classe</span><span id="fj-classe">—</span></div>
-          <div class="fj-item"><span>Divinité</span><span id="fj-divinite">—</span></div>
         </div>
         <span class="fj-change" onclick="reinitIdentite()">↩ Ce n'est pas moi</span>
       </div>
@@ -477,7 +471,7 @@ var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxxgFRBHQtppC9DUSkL7gC
 })();
 
 // Setup banner
-if(SCRIPT_URL==="COLLER_URL_ICI"){
+if(SCRIPT_URL==="https://script.google.com/macros/s/AKfycbxxgFRBHQtppC9DUSkL7gCV-1iiK3WB-94b91zk4hL0Tb5csmucipKNvBjLe_0YRtJdQA/exec"){
   document.getElementById('setup-banner').classList.remove('hidden');
 } else {
   document.getElementById('setup-banner').classList.add('hidden');
@@ -488,7 +482,7 @@ if(SCRIPT_URL==="COLLER_URL_ICI"){
 var joueurCache=[];
 
 function chargerJoueurs(){
-  if(SCRIPT_URL==="COLLER_URL_ICI") return;
+  if(SCRIPT_URL==="https://script.google.com/macros/s/AKfycbxxgFRBHQtppC9DUSkL7gCV-1iiK3WB-94b91zk4hL0Tb5csmucipKNvBjLe_0YRtJdQA/exec") return;
   fetch(SCRIPT_URL+"?action=all")
     .then(r=>r.json())
     .then(data=>{ if(data.joueurs) joueurCache=data.joueurs; })
@@ -528,7 +522,7 @@ function rechercherJoueurs(q){
     afficherSuggestions(res);
     return;
   }
-  if(SCRIPT_URL==="COLLER_URL_ICI") return;
+  if(SCRIPT_URL==="https://script.google.com/macros/s/AKfycbxxgFRBHQtppC9DUSkL7gCV-1iiK3WB-94b91zk4hL0Tb5csmucipKNvBjLe_0YRtJdQA/exec") return;
   spinner.classList.add('active');
   fetch(SCRIPT_URL+"?action=search&q="+encodeURIComponent(q))
     .then(r=>r.json())
@@ -546,9 +540,8 @@ function afficherSuggestions(joueurs){
     var item=document.createElement('div');
     item.className='autocomplete-item';
     item.innerHTML=
-      '<div class="ai-nom">'+esc(j.nom)+'<span class="ai-lunes">🌙 '+(j.lunes||'?')+' lunes</span></div>'+
-      '<div class="ai-perso">'+esc(j.personnage)+'</div>'+
-      '<div class="ai-peuple">⚔ '+esc(j.peuple)+(j.famille?' · '+esc(j.famille):'')+'</div>';
+      '<div class="ai-nom">'+esc(j.nom)+'</div>'+
+      '<div class="ai-perso">'+esc(j.personnage)+'</div>';
     item.addEventListener('click',function(){ selectionnerJoueur(j); });
     acList.appendChild(item);
   });
@@ -562,9 +555,6 @@ function selectionnerJoueur(j){
   document.getElementById('fj-nom').textContent=j.nom;
   document.getElementById('fj-perso').textContent=j.personnage||'—';
   document.getElementById('fj-peuple').textContent=j.peuple+(j.famille?' · '+j.famille:'');
-  document.getElementById('fj-lunes').textContent=(j.lunes||'?')+' 🌙';
-  document.getElementById('fj-classe').textContent=[j.classe,j.prestige].filter(Boolean).join(' · ')||'—';
-  document.getElementById('fj-divinite').textContent=j.divinite||'—';
   document.getElementById('fiche-joueur').classList.add('visible');
   document.getElementById('nouveau-toggle').style.display='none';
   document.getElementById('nouveau-fields').classList.remove('visible');
